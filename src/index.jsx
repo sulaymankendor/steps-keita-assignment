@@ -1,11 +1,12 @@
-import React from "react";
-import App from "./App";
 import "./styles.css";
-import ReactDOM from "react-dom/client";
+import App from "./App";
+import React from "react";
 import { Provider } from "react-redux";
+import ReactDOM from "react-dom/client";
 import store from "./redux/configureStore";
+import Dashboard from "./components/dashboard/Dashboard";
+import CreateProductForm from "../src/components/create-product/CreatProductForm";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Dashbooard from "./components/dashboard/Dashbooard";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -13,7 +14,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashbooard />,
+    element: <Dashboard />,
+  },
+  {
+    path: "/create-product",
+    element: <CreateProductForm />,
   },
 ]);
 const root = ReactDOM.createRoot(document.getElementById("root"));

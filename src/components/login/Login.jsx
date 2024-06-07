@@ -1,17 +1,20 @@
 import React from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { token } from "../../redux/authenticationTokenSlice";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import Eye from "../../svg/Eye";
 import { useState } from "react";
+import EyeSlash from "../../svg/EyeSlash";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSelector, useDispatch } from "react-redux";
+import { token } from "../../redux/authenticationTokenSlice";
 function Login() {
   const count = useSelector((state) => state);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [errorMsg, setErrorMsg] = useState("");
-  console.log(count);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const userLoginSchema = z.object({
     username: z.string().min(2, "username must have at least 2 characters"),
     password: z.string().min(4, "password must have at least 4 characters"),
@@ -23,6 +26,7 @@ function Login() {
     formState: { errors },
   } = useForm({ resolver: zodResolver(userLoginSchema) });
   const onSubmit = (data) => {
+    setIsLoggingIn(true);
     fetch("https://fakestoreapi.com/auth/login", {
       method: "POST",
       headers: {
@@ -37,13 +41,13 @@ function Login() {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         dispatch(token(data));
+        setIsLoggingIn(false);
         navigate("/dashboard");
       })
       .catch((error) => {
-        // Handle errors
         setErrorMsg("The username or password you entered is not valid");
+        setIsLoggingIn(false);
         console.error(error.message);
       });
   };
@@ -64,12 +68,22 @@ function Login() {
             {errors.username?.message}
           </p>
         )}
-        <div>
+        <div className="flex items-center  mb-8 border-gray-500 border-[0.5px] pl-2 py-[10px] rounded-lg">
           <input
             placeholder="password..."
+            type={showPassword ? "text" : "password"}
             {...register("password")}
-            className="bg-transparent mb-8 transition-all w-full border-gray-500 focus:border-gray-200 outline-none border-[0.5px] pl-2 py-2 rounded-lg text-white"
+            className="bg-transparent transition-all w-full h-full  focus:border-gray-200 outline-none  rounded-lg text-white"
           />
+          <button
+            className="mr-4"
+            onClick={() => {
+              setShowPassword((showPassword) => !showPassword);
+            }}
+            type="button"
+          >
+            {showPassword ? <Eye /> : <EyeSlash />}
+          </button>
         </div>
         {errors.password && (
           <p className="text-red-400 text-sm -mt-6 mb-8">
@@ -79,8 +93,11 @@ function Login() {
         {errorMsg && (
           <p className="text-red-400 text-sm -mt-6 mb-8">{errorMsg}</p>
         )}
-        <button className="bg-sky-500 hover:bg-sky-400 transition-all text-white self-center    px-12 py-2 rounded-md ">
-          Log in
+        <button
+          disabled={isLoggingIn}
+          className="bg-sky-500 hover:bg-sky-400 transition-all text-white self-center px-12 py-2 rounded-md "
+        >
+          {isLoggingIn ? <p className="px-[15.5px]">...</p> : <p>Log in</p>}
         </button>
       </form>
     </div>

@@ -84,3 +84,7 @@
 body {
   @apply bg-black;
 }
+
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+}

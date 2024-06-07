@@ -12,7 +12,6 @@ export const authenticationTokenSlice = createSlice({
   },
 });
 
-// Action creators are generated for each case reducer function
 export const { token } = authenticationTokenSlice.actions;
 
 export default authenticationTokenSlice.reducer;
